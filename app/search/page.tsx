@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import SearchInput from "@/components/search/search-input";
+import { useEffect, useState } from "react";
 import PopularBooks from "@/components/books/popular-books";
-import SearchResults from "@/components/search/search-results";
+import { useSearchParams } from "next/navigation";
+import BookCard from "@/components/books/book-card";
 
 
 type Book = {
@@ -15,34 +15,72 @@ type Book = {
 };
 
 export default function SearchPage() {
+  const searchParams = useSearchParams();
+  const query = searchParams.get("q") || "";
+
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const hasSearchResults = books.length > 0;
-  
-  async function handleSearch(query: string) {
-    if (!query.trim()) return;
+  const hasResults = books.length > 0;
 
-    setLoading(true);
-    
-    try {
-      const res = await fetch(`/api/search?q=${query}`);
-      const data = await res.json();
-      setBooks(data.books);
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    async function fetchBooks() {
+      if (!query.trim()) return;
+
+      setLoading(true);
+
+      try {
+        const res = await fetch(`/api/search?q=${query}`);
+        const data = await res.json();
+        setBooks(data.books);
+      } finally {
+        setLoading(false);
+      }
     }
-  }
 
+    fetchBooks();
+  }, [query]);
+  
   return (
-    <section className="max-w-7x1 mx-auto px-4 py-10">
-      <SearchInput onSearch={handleSearch} loading={loading} />
-
-      {!hasSearchResults && <PopularBooks />}
-
-      {hasSearchResults && (
-        <SearchResults books={books} loading={loading} />
+    <section className="max-w-7xl mx-auto px-4 py-10 mt-24">
+      {loading && (
+        <>
+          <p className="text-center text-muted-foreground mb-6">
+            Buscando livros...
+          </p>
+          {query && (
+            <h2 className="text-xl font-semibold mb-6">
+              Resultados para &quot;{query}&quot;
+            </h2>
+          )}
+        </>
       )}
+
+      {!loading && hasResults && (
+        <>
+          <h2 className="text-xl font-semibold mb-6">
+            Resultados para &quot;{query}&quot;
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+            {books.map((book) => (
+              <BookCard
+                key={book.key}
+                title={book.title}
+                author={book.author}
+                coverId={book.coverId}
+              />
+            ))}
+          </div>
+        </>
+      )}
+
+      {!loading && !hasResults && query && (
+        <p className="text-center text-muted-foreground">
+          Nenhum resultado encontrado para &quot;{query}&quot;
+        </p>
+      )}
+
+      {!query && <PopularBooks />}
     </section>
   );
 }
