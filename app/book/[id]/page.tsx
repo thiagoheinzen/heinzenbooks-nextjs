@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { getCoverUrl } from "@/lib/utils";
 
 type PageProps = {
   params: {
@@ -16,7 +17,7 @@ export default async function BookPage({ params }: PageProps) {
   try {
     const res = await fetch(
       `https://openlibrary.org/works/${params.id}.json`,
-      { cache: "no-store" }
+      { next: { revalidate: 60 } }
     );
 
     if (!res.ok) {
@@ -34,22 +35,19 @@ export default async function BookPage({ params }: PageProps) {
     const description =
       typeof data.description === "string"
         ? data.description
-        : typeof data.description === "object" && data.description?.value
-        ? data.description.value
-        : '';
+        : data.description?.value || '';
 
-    const coverUrl = data.covers?.[0]
-      ? `https://covers.openlibrary.org/b/id/${data.covers[0]}-L.jpg`
-    : "/covers/placeholder.webp";
+    const coverUrl =
+      getCoverUrl(data.covers?.[0]) ?? "/covers/placeholder.webp";
 
     return (
       <section className="max-w-6xl mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="relative h-[420px]">
+        <div className="relative w-full aspect-[2/3] max-h-[500px]">
           <Image
             src={coverUrl}
             alt={data.title}
             fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            sizes="(max-width: 768px) 100vw, 33vw"
             className="object-cover rounded-lg"
           />
         </div>
@@ -76,7 +74,11 @@ export default async function BookPage({ params }: PageProps) {
       </section>
     );
   } catch (error) {
-    console.error('Error fetching book details:', error);
-    return <div className="p-10">Erro ao carregar informações do livro. Tente novamente mais tarde.</div>;
+    console.error("Error fetching book details:", error);
+    return (
+      <div className="p-10">
+        Erro ao carregar informações do livro. Tente novamente mais tarde.
+      </div>
+    );
   }
 }

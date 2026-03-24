@@ -1,6 +1,6 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import Header from "@/components/header";
+import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
 import { Inter, Source_Serif_4 } from "next/font/google";
 
@@ -29,15 +29,21 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className={`min-h-screen flex flex-col ${inter.variable} ${sourceSerif.variable}`}>
+      <body
+        className={`min-h-screen flex flex-col ${inter.variable} ${sourceSerif.variable}`}
+      >
         <Header />
+
         <main className="flex-1">
-          <div className="min-h-full">
+          <div className="max-w-7xl mx-auto px-4 min-h-full">
             {children}
           </div>
         </main>
+
         <Footer />
       </body>
     </html>
   );
 }
+
+
