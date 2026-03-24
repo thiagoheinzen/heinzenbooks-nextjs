@@ -49,16 +49,38 @@ const popularBooks = [
     author: "Yuval Noah Harari",
     coverSrc: "/covers/sapiens.webp",
   },
+  {
+    key: "biblioteca-meia-noite",
+    title: "A Biblioteca da Meia-Noite",
+    author: "Matt Haig",
+    coverSrc: "/covers/biblioteca-meia-noite.webp",
+  },
+  {
+    key: "habitos-atomicos",
+    title: "Hábitos Atômicos",
+    author: "James Clear",
+    coverSrc: "/covers/habitos-atomicos.webp",
+  },
+  {
+    key: "assassinato-expresso-oriente",
+    title: "O Assassinato no Expresso do Oriente",
+    author: "Agatha Christie",
+    coverSrc: "/covers/assassinato-expresso-oriente.webp",
+  },
+  {
+    key: "mentirosos",
+    title: "Mentirosos",
+    author: "E. Lockhart",
+    coverSrc: "/covers/mentirosos.webp",
+  },
 ];
 
 export default function PopularBooks() {
   return (
-    <section className="mt-16">
-      <h2 className="text-2xl font-semibold mb-8 text-center">
-        Livros populares
-      </h2>
+    <>
+      <h2 className="text-xl font-semibold mt-12 mb-6">Livros populares</h2>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
         {popularBooks.map((book) => (
           <BookCard
             key={book.key}
@@ -68,6 +90,6 @@ export default function PopularBooks() {
           />
         ))}
       </div>
-    </section>
+    </>
   );
 }
